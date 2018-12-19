@@ -1,33 +1,37 @@
 package paint;
 
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.util.Iterator;
 import java.util.Vector;
 
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
-public class JavaPaint {
+public class JavaPaint extends JPanel {
 	int oldX, oldY;
 	int curX, curY;
 	JRadioButton black,white;
-	Color color;
-	Vector<point> tmp = new Vector<point>();
+	Vector<Point> tmp = new Vector<Point>();
 	Vector<Vector> list = new Vector<Vector>();
-	int a[], b[];
+	int x[], y[];
 	public JavaPaint() {
-		black = new JRadioButton("°ËÁ¤»ö");
-		white = new JRadioButton("Èò»ö");
 		ButtonGroup rb = new ButtonGroup();
-		rb.add(black); rb.add(white);
-		this.add(black); this.add(white);
-		black.addItemListener(new SelectListener());
-		white.addItemListener(new SelectListener());
 		this.addMouseMotionListener(new MouseMotionListener() {
 			public void mouseMoved(MouseEvent e) {}
 			public void mouseDragged(MouseEvent e) {
 				curX = e.getX();
 				curY = e.getY();
-				tmp.add(new point(curX, curY));
-				FreeDraw.this.getGraphics().drawLine(oldX, oldY, curX, curY);
+				tmp.add(new Point(curX, curY));
+				JavaPaint.this.getGraphics().drawLine(oldX, oldY, curX, curY);
 				oldX = curX;
 				oldY = curY;
 				}
@@ -38,13 +42,13 @@ public class JavaPaint {
 				super.mousePressed(e);
 				oldX = e.getX();
 				oldY = e.getY();
-				tmp.add(new point(oldX, oldY));
+				tmp.add(new Point(oldX, oldY));
 			}
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				list.add(tmp);
-				tmp = new Vector<point>();
+				tmp = new Vector<Point>();
 			}
 		});
 	}
@@ -52,48 +56,33 @@ public class JavaPaint {
 	protected void paintComponent(Graphics g) {
 		// TODO Auto-generated method stub
 		super.paintComponent(g);
-		for (Vector vs : list) {
-			Iterator it = vs.iterator();
-			a = new int[vs.size()];
-			b = new int[vs.size()];
+		for (Vector v : list) {
+			Iterator i = v.iterator();
+			x = new int[v.size()];
+			y = new int[v.size()];
 			int k = 0;
-			while (it.hasNext()) {
-				point pt = (point) it.next();
-				a[k] = pt.x;
-				b[k] = pt.y;
+			while (i.hasNext()) {
+				Point p = (Point) i.next();
+				x[k] = p.x;
+				y[k] = p.y;
 				k++;
 			}
-			g.drawPolyline(a, b, a.length);
+			g.drawPolyline(x, y, x.length);
 		}
 	}
 	public static void main(String[] args) {
-		FreeDraw a = new FreeDraw();
+		JavaPaint j = new JavaPaint();
 		JFrame frame = new JFrame();
-		frame.add(a);
+		frame.add(j);
 		frame.setSize(300, 300);
 		frame.setVisible(true);
-		frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
-	class point {
+	class Point {
 		int x, y;
-		public point(int a, int b) {
-			x = a;
-			y = b;
-		}
-	}
-	class SelectListener implements ItemListener {
-	
-		@Override
-		public void itemStateChanged(ItemEvent e) {
-			AbstractButton a = (AbstractButton) e.getItemSelectable();
-			if(e.getStateChange()==ItemEvent.SELECTED){
-				if(a.getText().equals("°ËÁ¤»ö")) {
-					color = Color.RED;
-				}
-				else if(a.getText().equals("Èò»ö")) {
-					color = Color.BLUE;
-				}
-			}
+		public Point(int x, int y) {
+			this.x = x;
+			this.y = y;
 		}
 	}
 }
